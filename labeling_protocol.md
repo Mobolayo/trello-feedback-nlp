@@ -97,13 +97,14 @@ This section captures the specific questions and edge cases identified while bui
 ### 5.3 Non-actionable, ambiguous, and low-specificity reviews
 
 - **Vague praise (a large share of the data).** Reviews expressing satisfaction with no specific problem (e.g. "excellent app", "so useful") are labeled **Positive / No Issue** (category 8).
-- **Ambiguous / uninterpretable reviews.** Some reviews cannot be confidently understood (e.g. "i want to update this app" — unclear whether it refers to updating the app or updating a review). These are labeled **Non-actionable / Unclear** (category 9) and are *not* forced into a specific issue category.
+- **Ambiguous but plausibly actionable reviews.** When a review is ambiguous but has a plausible actionable reading, it is labeled by that actionable category rather than as Unclear, so a possible product signal is not erased. For example, "Nice & easy to use, can add graph representation also" is read as a request and labeled 
 - **Negative but non-specific reviews.** Some reviews express dissatisfaction while naming no product area (e.g. "not what I'm looking for"). Because there is no locatable issue, these are labeled **Non-actionable / Unclear** (category 9) rather than an issue bucket.
 - **Loud but thin reviews.** Some reviews are emotionally strong but specify little (e.g. a review threatening to uninstall over a "forced change to Workspaces limiting usability"). **Rule: a review is actionable if it names a specific product area or change a team could act on, even if the description is vague or emotional.** Under this rule such a review is labeled by the product area it names (here, Navigation / Usability).
 
 ### 5.4 Data-quality issues surfaced during labeling
 
-- **Non-English reviews.** Despite requesting English-only during collection, some non-English reviews appear (e.g. a review in Spanish). This shows the language filter is imperfect and is recorded as a data limitation to address before or during analysis.
+- **Non-English reviews.** Despite requesting English-only during collection, some non-English reviews appear (e.g. a review in Spanish). Because they carry no usable signal for an English-language analysis, they are labeled 
+- **Non-actionable / Unclear** (category 9). This is also recorded as a data limitation, since it shows the language filter is imperfect.
 
 ---
 
@@ -119,10 +120,9 @@ This section captures the specific questions and edge cases identified while bui
 
 The category scheme (Section 3) is now finalized. The following downstream items remain open and should be decided based on further work or professor input, not filled in arbitrarily:
 
-- **Final labeling sample size** — how many reviews to label as the reference set (working target: roughly 150–300 reviews, to be confirmed based on category balance and available time).
 - **Whether to filter very short / non-actionable reviews before clustering**, given that a large share of reviews carry little issue signal.
 
-*Resolved since the previous version:* the category list has been finalized at ten categories, and the original single "Other" bucket has been split into "Positive / No Issue" (8), "Non-actionable / Unclear" (9), and "Other" (10).
+*Resolved since the previous version:* the labeling reference set has been set at **200 reviews**, drawn as a random, reproducible sample (fixed seed) that excludes the 40 reviews used earlier for category development. Non-English reviews are labeled Non-actionable / Unclear (Section 5.4), and the rule for ambiguous-but-plausibly-actionable reviews has been documented (Section 5.3).
 
 ---
 
