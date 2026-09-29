@@ -3,7 +3,7 @@
 **Project:** From User Feedback to Product Decisions — Comparing Traditional and Semantic NLP Methods for Product Issue Discovery  
 **Purpose of this document:** to record how reviews are labeled into product-issue categories, and the rules used for difficult cases, so the human-labeled reference set ("answer key") is consistent, transparent, and defensible.  
 **Status:** Category scheme and core rules are finalized (Sections 3–4). A small number of downstream items remain open (Section 7).  
-**Last updated:** September 27, 2026.  
+**Last updated:** September 29, 2026.
 
 ---
 
