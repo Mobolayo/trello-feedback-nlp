@@ -1,9 +1,12 @@
 # Labeling Protocol (Codebook)
 
-**Project:** From User Feedback to Product Decisions — Comparing Traditional and Semantic NLP Methods for Product Issue Discovery  
-**Purpose of this document:** to record how reviews are labeled into product-issue categories, and the rules used for difficult cases, so the human-labeled reference set ("answer key") is consistent, transparent, and defensible.  
-**Status:** Category scheme and core rules are finalized (Sections 3–4). A small number of downstream items remain open (Section 7).  
-**Last updated:** September 29, 2026.
+**Project:** From User Feedback to Product Decisions — Comparing Traditional and Semantic NLP Methods for Product Issue Discovery
+
+**Purpose of this document:** to record how reviews are labeled into product-issue categories, and the rules used for difficult cases, so the human-labeled reference set ("answer key") is consistent, transparent, and defensible.
+
+**Status:** Category scheme and core rules are finalized. Hand-labeling of the 200-review reference set is **complete (200 of 200 labeled)**.
+
+**Last updated:** October 4, 2026.
 
 ---
 
@@ -11,7 +14,7 @@
 
 The project compares two NLP methods by how well their automatically-formed groups of reviews match a set of human-assigned labels. Those human labels are the reference the methods are scored against, so the labeling must be *consistent* (the same kind of review is labeled the same way every time) and *documented* (the reasoning is written down, not held in someone's head). This protocol is that documentation.
 
-A note held throughout: labeling is partly subjective — two reasonable people can disagree on a borderline review. The response to that is not to pretend the labels are perfectly objective, but to make the rules explicit so that decisions are made the same way each time.
+A note held throughout: labeling is partly subjective — two people can disagree on a borderline review. The response to that is to make the rules explicit so that decisions are made the same way each time.
 
 ---
 
@@ -32,7 +35,7 @@ A key revision from this process: the original single "Other" catch-all was foun
 
 Every review's primary label comes from this list of ten categories:
 
-1. **Performance / Crashes** — app crashing, freezing, not loading, slowness.
+1. **Performance / Crashes** — the app crashing, freezing, failing to load, running slowly, showing error messages, or other general technical malfunctions that stop it working properly. (Login-specific errors are placed under Account / Login, not here.)
 2. **Notifications** — reminders or notifications not working or misbehaving.
 3. **Navigation / Usability** — hard to use, confusing layout, workflow friction.
 4. **Account / Login** — sign-in, sign-up, authentication failures.
@@ -43,9 +46,11 @@ Every review's primary label comes from this list of ten categories:
 9. **Non-actionable / Unclear** — not praise, but no usable issue either: vague complaints, ambiguous wording, or "meh" reviews that name no specific problem.
 10. **Other** — a *real, actionable* issue that genuinely does not fit categories 1–7.
 
+**Issue categories describe problems or requests, not mentions.** The product-area categories (1–7, and 10) are for reviews raising an actionable problem or request in that area — not for any review that merely mentions that area. A review that *praises* a product area (e.g. "so easy to use") has no actionable issue and is labeled **Positive / No Issue**, not the matching issue category.
+
 **Important distinction between categories 9 and 10:** category 9 means *"no usable signal"* (there is no actionable issue to extract), while category 10 means *"a genuine issue that did not have a box"* (there is a real issue, but no matching category). Keeping these separate is deliberate: if category 10 fills up during labeling, that is a signal that a real product-issue category is missing from the scheme and should be added.
 
-**Why "Positive / No Issue" (8) is kept separate from "Non-actionable / Unclear" (9):** although both lack an action item, they carry different information. Positive reviews are expected to be one of the largest categories (roughly 59% of reviews are 5-star), and the share of satisfied users is itself a meaningful product signal. Collapsing praise into a generic non-actionable bucket would hide that signal and would prevent testing whether the NLP methods can separate praise from problems. They are therefore kept distinct.
+**Why "Positive / No Issue" (8) is kept separate from "Non-actionable / Unclear" (9):** although both lack an action item, they carry different information. Positive reviews are one of the largest categories, and the share of satisfied users is a meaningful product signal. Collapsing praise into a generic non-actionable bucket would hide that signal and would prevent testing whether the NLP methods can separate praise from problems. They are therefore kept distinct.
 
 **Scope decision (locked):** *all* reviews are labeled, including praise. Non-actionable reviews are a real and large part of the data and are kept inside the study rather than removed.
 
@@ -81,49 +86,50 @@ Every issue that does *not* win the primary slot is recorded as a secondary labe
 
 ## 5. Edge cases and how they are resolved
 
-This section captures the specific questions and edge cases identified while building the protocol, grouped by theme.
+This section captures the specific questions and edge cases identified while building the protocol and during labeling, grouped by theme.
 
 ### 5.1 Reviews with multiple issues
 
-- **Reviews that fit more than one bucket.** Discovered directly while labeling the sample — some reviews genuinely describe two or more issues (e.g. a review asking for list-color customization *and* reporting that files can't be attached on Android tablet). Resolved by the single-primary-label + secondary-notes system (4.2) and the tiebreak ladder (4.3).
+- **Reviews that fit more than one bucket.** Some reviews genuinely describe two or more issues (e.g. a review asking for list-color customization *and* reporting that files can't be attached on Android tablet). Resolved by the single-primary-label + secondary-notes system (4.2) and the tiebreak ladder (4.3).
 - **What if a review has three or more actionable issues?** The primary label is the ladder winner; **all** remaining issues go into the secondary column, comma-separated. Nothing is dropped — the secondary column has no cap, because it is never scored and costs nothing to extend.
 - **What if two issues both satisfy the top of the primary rule (e.g. two bugs)?** The choice is **not** made randomly. The tiebreak ladder continues past the first rule — specificity, then severity, then (only as a final fallback) order of mention — so the outcome is deterministic and repeatable rather than a coin flip.
 - **Making sure rare categories are not lost.** A rare category that loses the primary slot is **automatically preserved in the secondary column**, because secondary records every non-primary issue. For this reason, rarity is deliberately *not* added as a competing primary-selection rule — doing so would conflict with the ladder. The catch-all secondary already protects small categories.
 
 ### 5.2 Reviews where the star rating and the text disagree
 
-- **Rating/text mismatch.** Some reviews carry a rating that contradicts their text (e.g. a review describing a login failure but giving 5 stars). **Rule: label on the content of the text, not on the star rating.** The star rating is a separate signal and is not used to decide the issue category. This mismatch is itself noted as a data limitation.
+- **Rating/text mismatch.** Some reviews carry a rating that contradicts their text (e.g. a review describing a login failure but giving 5 stars). **Rule: label on the content of the text, not on the star rating.** The star rating is a separate signal and is not used to decide the issue category. This mismatch is noted as a data limitation.
 
 ### 5.3 Non-actionable, ambiguous, and low-specificity reviews
 
 - **Vague praise (a large share of the data).** Reviews expressing satisfaction with no specific problem (e.g. "excellent app", "so useful") are labeled **Positive / No Issue** (category 8).
-- **Ambiguous but plausibly actionable reviews.** When a review is ambiguous but has a plausible actionable reading, it is labeled by that actionable category rather than as Unclear, so a possible product signal is not erased. For example, "Nice & easy to use, can add graph representation also" is read as a request and labeled 
+- **Ambiguous / uninterpretable reviews.** Some reviews cannot be confidently understood (e.g. "i want to update this app" — unclear whether it refers to updating the app or updating a review). These are labeled **Non-actionable / Unclear** (category 9) and are *not* forced into a specific issue category.
+- **Ambiguous but plausibly actionable reviews.** When a review is ambiguous but has a plausible actionable reading, it is labeled by that actionable category rather than as Unclear, so a possible product signal is not erased. For example, "Nice & easy to use, can add graph representation also" is read as a request and labeled **Feature Request**, even though it could be read as praise. Only reviews with no plausible actionable reading (e.g. "i want to update this app") are labeled **Non-actionable / Unclear**.
 - **Negative but non-specific reviews.** Some reviews express dissatisfaction while naming no product area (e.g. "not what I'm looking for"). Because there is no locatable issue, these are labeled **Non-actionable / Unclear** (category 9) rather than an issue bucket.
 - **Loud but thin reviews.** Some reviews are emotionally strong but specify little (e.g. a review threatening to uninstall over a "forced change to Workspaces limiting usability"). **Rule: a review is actionable if it names a specific product area or change a team could act on, even if the description is vague or emotional.** Under this rule such a review is labeled by the product area it names (here, Navigation / Usability).
 
-### 5.4 Data-quality issues surfaced during labeling
+### 5.4 Cross-cutting and data-quality issues surfaced during labeling
 
-- **Non-English reviews.** Despite requesting English-only during collection, some non-English reviews appear (e.g. a review in Spanish). Because they carry no usable signal for an English-language analysis, they are labeled 
-- **Non-actionable / Unclear** (category 9). This is also recorded as a data limitation, since it shows the language filter is imperfect.
+- **Non-English reviews.** Despite requesting English-only during collection, some non-English reviews appear (e.g. a review in Spanish). Because they carry no usable signal for an English-language analysis, they are labeled **Non-actionable / Unclear** (category 9). This is also recorded as a data limitation, since it shows the language filter is imperfect.
+- **App vs. web parity.** A small number of reviews complain that the mobile app lacks functionality available in the web or desktop version (e.g. offline access, moving cards). These are labeled by their underlying issue (the missing or broken feature), and "app-vs-web parity" is noted as an observed sub-theme rather than its own category, since it was too infrequent to warrant one.
 
 ---
 
 ## 6. Acknowledged limitations and future directions
 
 - **Single-label simplification.** Real reviews are often multi-issue, but the primary evaluation uses one label per review. This is a deliberate scope choice made because the clustering methods assign one group per review and standard metrics assume one true label. The multi-issue reality is acknowledged, recorded in the secondary column, and flagged as a candidate for a future **multi-label** analysis rather than implemented now.
-- **Subjectivity of labels.** Borderline reviews can be labeled differently by different people. This is mitigated by the documented rules above and by comparing independent labelings to gauge agreement.
+- **Subjectivity of labels.** Borderline reviews can be labeled differently by different people. This is mitigated by the documented rules above, and a future inter-rater reliability check (a second independent labeler on a subset) could quantify it.
 - **Rating vs. text mismatch and self-selection.** Star ratings do not always match text sentiment, and reviewers skew toward strong positive/negative experiences — both limit how representative the labels are of all users.
 
 ---
 
 ## 7. Open items (not yet finalized)
 
-The category scheme (Section 3) is now finalized. The following downstream items remain open and should be decided based on further work or professor input, not filled in arbitrarily:
+The category scheme (Section 3) and the labeling of the reference set are now complete. The following downstream item remains open and will be decided based on further work or professor input:
 
-- **Whether to filter very short / non-actionable reviews before clustering**, given that a large share of reviews carry little issue signal.
+- **Whether to filter very positive / non-actionable reviews before clustering**, given that a large share of reviews carry little issue signal.
 
-*Resolved since the previous version:* the labeling reference set has been set at **200 reviews**, drawn as a random, reproducible sample (fixed seed) that excludes the 40 reviews used earlier for category development. Non-English reviews are labeled Non-actionable / Unclear (Section 5.4), and the rule for ambiguous-but-plausibly-actionable reviews has been documented (Section 5.3).
+*Resolved since earlier versions:* the category list is finalized at ten categories (the original "Other" was split into "Positive / No Issue" (8), "Non-actionable / Unclear" (9), and "Other" (10)); the reference set is set at **200 reviews**, drawn as a random, reproducible sample (fixed seed) that excludes the 40 reviews used earlier for category development; hand-labeling of all 200 is complete; the "Performance / Crashes" definition was expanded to include error messages and general malfunctions; non-English reviews are labeled Non-actionable / Unclear; and the rules for ambiguous-but-plausibly-actionable reviews and app-vs-web parity have been documented.
 
 ---
 
-*This protocol is a living document and will be updated as the remaining open items are settled and as further edge cases appear during full labeling.*
+*This protocol is a living document and will be updated as the remaining open item is settled and as further edge cases appear in analysis.*
